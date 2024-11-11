@@ -17,6 +17,7 @@ const Content = () => {
             return {
               name: pokeDetails.name,
               image: pokeDetails.sprites.front_default,
+              id: pokeDetails.id,
             };
           })
         );
@@ -31,8 +32,7 @@ const Content = () => {
 
   return (
     <div>
-      <h1>Lista de Pokémon</h1>
-      <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+      <div className="pokemons-div">
         {pokemons.map((pokemon, index) => (
           <div key={index} style={{ margin: '10px', textAlign: 'center' }}>
             <img src={pokemon.image} alt={pokemon.name} />
