@@ -1,7 +1,25 @@
 import React, { useState, useEffect } from 'react';
 
-const Content = () => {
+const Content = ({score, setScore, bestScore, setBestScore}) => {
   const [pokemons, setPokemons] = useState([]);
+  const [clickedPokemons, setClickedPokemons] = useState([]);
+
+  const addScore = () => {
+    setScore(score + 1);
+  };
+
+  const resetScore = () => {
+    setScore(0);
+  }
+
+  useEffect(() => {
+    if (clickedPokemons.length > 0) {
+      setScore(clickedPokemons.length);
+      if (clickedPokemons.length > bestScore) {
+        setBestScore(clickedPokemons.length);
+      }
+    }
+  }, [clickedPokemons, bestScore, setScore, setBestScore]);
 
   useEffect(() => {
     const fetchPokemons = async () => {
@@ -21,7 +39,8 @@ const Content = () => {
             };
           })
         );
-        setPokemons(pokemonData);
+
+        setPokemons(shuffleArray(pokemonData));
       } catch (error) {
         console.error('Erro ao buscar Pokémon:', error);
       }
@@ -30,16 +49,39 @@ const Content = () => {
     fetchPokemons();
   }, []);
 
+  // Função para embaralhar o array de Pokémon
+  const shuffleArray = (array) => {
+    return array.sort(() => Math.random() - 0.5);
+  };
+
+  const handlePokemonClick = (id) => {
+    setClickedPokemons((prevClicked) => {
+      if (!prevClicked.includes(id)) {
+        return [...prevClicked, id];
+      } else {
+        resetScore();
+        return [];
+      }
+    });
+  
+    setPokemons((prevPokemons) => shuffleArray([...prevPokemons]));
+  };
+  
   return (
     <div>
       <div className="pokemons-div">
-        {pokemons.map((pokemon, index) => (
-          <div key={index} style={{ margin: '10px', textAlign: 'center' }}>
+        {pokemons.map((pokemon) => (
+          <div
+            key={pokemon.id}
+            style={{ margin: '10px', textAlign: 'center', cursor: 'pointer' }}
+            onClick={() => handlePokemonClick(pokemon.id)}
+          >
             <img src={pokemon.image} alt={pokemon.name} />
             <p>{pokemon.name}</p>
           </div>
         ))}
       </div>
+      
     </div>
   );
 };
